@@ -11,12 +11,17 @@ def receive_messages():
     while True:
         try:
             message = client_socket.recv(1024).decode()
+            print("Received message:", message)
         except:
             client_socket.close()
             return
         if message.startswith('CHANGE\n'):
             new_content = message[7:]
-            chat_box.insert(tk.END, new_content + '\n')
+            temp = chat_box.get("1.0", tk.END)
+            chat_box.delete("1.0", tk.END)
+            chat_box.insert(tk.END, temp + new_content + '\n')
+            print("added")
+            root.update()
         if message == "ALIVEREQ\n":
             client_socket.send("ALIVEOK\n".encode())
 
@@ -28,9 +33,11 @@ def send_message(event=None):
     client_socket.send(("%s: %s\n" % (username, message)).encode())
     input_box.delete(0, tk.END)
 
+
 def set_username(event=None):
     global username
     username = username_box.get()
+    chat_box.insert(tk.END, username + " set as username\n")
     username_box.delete(0, tk.END)
     username_box.config(state=tk.DISABLED)
     input_box.config(state=tk.NORMAL)
@@ -44,7 +51,6 @@ chat_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 chat_box = tk.Text(chat_frame)
 chat_box.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-chat_box.config(state=tk.DISABLED)
 
 input_frame = tk.Frame(root)
 input_frame.pack(side=tk.BOTTOM, fill=tk.X)
