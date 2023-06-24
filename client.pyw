@@ -31,6 +31,10 @@ def send_message(event=None):
         client_socket.send("DISCONNECT\n".encode())
         root.quit()
     client_socket.send(("%s: %s\n" % (username, message)).encode())
+    new_content = "%s: %s\n" % (username, message)
+    temp = chat_box.get("1.0", tk.END)
+    chat_box.delete("1.0", tk.END)
+    chat_box.insert(tk.END, temp + new_content + '\n')
     input_box.delete(0, tk.END)
 
 
@@ -71,4 +75,5 @@ message_thread = threading.Thread(target=receive_messages)
 message_thread.start()
 
 root.mainloop()
+client_socket.send(("%s left" % username).encode())
 client_socket.close()
